@@ -86,8 +86,8 @@ class ChatConsumer(WebsocketConsumer):
         except Conversation.DoesNotExist as e:
             # Handle Conversation not found error
             print(f"Conversation not found: {e}")
-            # You may want to send an error message back to the user
+            
         except Exception as e:
             # Handle other exceptions
             print(f"Error: {e}")
-            # You may want to send an error message back to the user
+           

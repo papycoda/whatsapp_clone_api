@@ -24,8 +24,7 @@ SECRET_KEY = 'django-insecure-evlqp6_o!pr-k4wt309x5ddz&-7$5m00qs$m644c-pr=z@ec*e
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -37,19 +36,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework', 
     'channels',
     'corsheaders',
     'users',
     'chat',
-    'django.contrib.sites',
     'rest_framework.authtoken',
     'dj_rest_auth',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'dj_rest_auth.registration',
-    'channels',
 ]
 
 MIDDLEWARE = [
@@ -84,6 +82,7 @@ TEMPLATES = [
 
 #WSGI_APPLICATION = 'ChatAPI.wsgi.application'
 AUTH_USER_MODEL = 'users.MyUser'
+
 
 
 # Database
@@ -127,8 +126,11 @@ ASGI_APPLICATION = "ChatAPI.asgi.application"
 
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': "channels.layers.InMemoryChannelLayer"
-    }
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
 }
 
 CORS_ALLOW_ALL_ORIGINS = True 

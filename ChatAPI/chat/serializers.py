@@ -1,6 +1,6 @@
 from users.serializers import UserSerializer
 from rest_framework import serializers
-from .models import Conversation, Message
+from .models import Conversation, Message, Room
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -33,3 +33,10 @@ class ConversationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Conversation
         fields = ['initiator', 'receiver', 'messages']
+
+
+class RoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = '__all__'
+

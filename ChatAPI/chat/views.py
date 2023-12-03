@@ -1,10 +1,14 @@
 from django.shortcuts import redirect, reverse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from users.models import MyUser as User
-from .models import Conversation
-from .serializers import ConversationListSerializer, ConversationSerializer
+from .models import Conversation, Room
+from .serializers import ConversationListSerializer, ConversationSerializer,RoomSerializer
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
+
+
 
 @api_view(['POST'])
 def start_convo(request):
@@ -41,4 +45,43 @@ def conversations(request):
     conversation_list = Conversation.objects.filter(Q(initiator=request.user) | Q(receiver=request.user))
     serializer = ConversationListSerializer(instance=conversation_list, many=True)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_room(request):
+    room_name = request.data.get('name')
+
+    if not room_name:
+        return Response({'message': 'Room name is required'}, status=400)
+
+    room = Room.objects.create(name=room_name)
+    room.join(request.user)
+
+    serializer = RoomSerializer(instance=room)
+    return Response(serializer.data, status=201)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_room(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    serializer = RoomSerializer(instance=room)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def join_room(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    room.join(request.user)
+    serializer = RoomSerializer(instance=room)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def leave_room(request, room_id):
+    room = get_object_or_404(Room, id=room_id)
+    room.leave(request.user)
+    serializer = RoomSerializer(instance=room)
+    return Response(serializer.data)
+
 
